@@ -1,0 +1,19 @@
+# dependencies
+node_modules
+
+# build output
+.next
+out
+*.tsbuildinfo
+
+# env — never commit these
+.env
+.env.*
+!.env.example
+
+# hosting
+.vercel
+
+# local tooling
+.claude
+.DS_Store

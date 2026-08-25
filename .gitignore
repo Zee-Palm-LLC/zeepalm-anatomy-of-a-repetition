@@ -6,14 +6,22 @@ node_modules
 out
 *.tsbuildinfo
 
-# env — never commit these
+# secrets — never commit these
 .env
 .env.*
 !.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.keystore
+id_rsa*
+credentials.json
+service-account*.json
 
 # hosting
 .vercel
 
-# local tooling
+# local tooling / os
 .claude
 .DS_Store

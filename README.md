@@ -171,6 +171,13 @@ NEXT_PUBLIC_SITE_URL=https://your-domain.com
 
 There is an `.env.example` to copy. It is the only variable the project reads.
 
+A bare host works — `zeepalm.com` becomes `https://zeepalm.com` — and paths and
+trailing slashes are stripped. If it is empty or malformed the build falls back
+to a placeholder rather than failing: `metadataBase` is constructed from this
+value, and an invalid one throws during Next's config collection, which surfaces
+as `Failed to collect configuration for /_not-found — TypeError: Invalid URL`
+without naming the variable at fault.
+
 Set it before the first deploy and every canonical link, the sitemap and the
 Open Graph image follow from `lib/site.ts`. Everything is statically
 prerendered — the six lift pages included — so there is nothing else to

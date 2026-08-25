@@ -13,6 +13,7 @@ import { EXERCISES, samplePose, sampleCurve } from "./exercises";
 import { MUSCLES, musclePath, closedPath, activationColor } from "./muscles";
 import { anchorRig, plantHands, framing, GROUND_Y, BAR_X, BAR_Y } from "./stage";
 import { peakOf, peakMomentOf, coverageFor } from "./analysis";
+import { resolveSiteUrl } from "./site";
 
 /** A rep, sampled densely enough to catch a bad frame between keyframes. */
 const FRAMES = Array.from({ length: 41 }, (_, i) => i / 40);
@@ -302,6 +303,44 @@ describe("colour", () => {
       for (let v = -0.5; v <= 1.5; v += 0.1) {
         expect(activationColor(v, theme)).toMatch(/^rgb\(\d+, \d+, \d+\)$/);
       }
+    }
+  });
+});
+
+describe("site url resolution", () => {
+  // metadataBase throws inside Next's config collection if this is malformed,
+  // and the build dies on /_not-found without naming the variable at fault.
+  it("falls back for anything empty or unset", () => {
+    for (const v of [undefined, "", "   ", "\t"]) {
+      expect(resolveSiteUrl(v)).toMatch(/^https:\/\/[^/]+$/);
+    }
+  });
+
+  it("adds a missing protocol rather than throwing", () => {
+    expect(resolveSiteUrl("zeepalm.com")).toBe("https://zeepalm.com");
+    expect(resolveSiteUrl("  zeepalm.com  ")).toBe("https://zeepalm.com");
+  });
+
+  it("strips paths and trailing slashes so canonicals cannot double up", () => {
+    expect(resolveSiteUrl("https://zeepalm.com/")).toBe("https://zeepalm.com");
+    expect(resolveSiteUrl("https://zeepalm.com/some/path")).toBe("https://zeepalm.com");
+  });
+
+  it("keeps a valid origin intact, http included", () => {
+    expect(resolveSiteUrl("https://a.example.com")).toBe("https://a.example.com");
+    expect(resolveSiteUrl("http://localhost:3000")).toBe("http://localhost:3000");
+  });
+
+  it("falls back on junk instead of killing the build", () => {
+    for (const v of ["not a url", "://", "https://", "!!!"]) {
+      expect(() => resolveSiteUrl(v)).not.toThrow();
+      expect(resolveSiteUrl(v)).toMatch(/^https?:\/\/[^/]+$/);
+    }
+  });
+
+  it("always produces a URL that metadataBase can construct", () => {
+    for (const v of [undefined, "", "zeepalm.com", "junk", "https://x.dev/"]) {
+      expect(() => new URL(resolveSiteUrl(v))).not.toThrow();
     }
   });
 });

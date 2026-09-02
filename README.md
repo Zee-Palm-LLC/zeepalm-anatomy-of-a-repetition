@@ -149,6 +149,30 @@ which left the pull-up grip up to 0.16 units off the bar at dead hang. `acos` is
 already clamped, so the margin bought nothing — it is gone, and full extension
 now resolves exactly.
 
+## Social assets
+
+```bash
+npm run social
+```
+
+Renders looping video straight from the rig into `public/social/` — square
+(1080×1080), landscape (1920×1080) and portrait (1080×1920), plus a poster
+frame for each. Twelve seconds, thirty frames a second, one repetition of each
+of the six lifts.
+
+Frames come from `lib/svgFrame.ts`, which imports the same geometry, activation
+curves and palette the site animates. Nothing is screen-recorded and there is no
+second copy of the anatomy, so the video cannot show a body the site disagrees
+with. Rasterised with sharp, encoded with ffmpeg as H.264 / `yuv420p` — the
+combination every platform will actually play inline.
+
+It also writes `coverage-matrix.png` and an eight-slide `carousel/`. Every
+number printed on a slide is read from the activation curves at render time —
+none of it is typed in — so the claims cannot drift from the study.
+
+The output is gitignored: it is a build artefact, and 3.4 MB of binary does not
+belong in the history when one command regenerates it.
+
 ## Accessibility
 
 - Every muscle in the studio is a real control: focusable, operable with

@@ -20,6 +20,7 @@ import {
   type Vec,
 } from "./anatomy";
 import { samplePose, type Exercise } from "./exercises";
+import { closedPath } from "./muscles";
 
 // Framed tight on the figure so it fills the stage rather than floating in it.
 export const VB = { x: -20, y: 64, w: 620, h: 420 };
@@ -143,3 +144,23 @@ export function plantHands(rig: Rig, ex: Exercise): Rig {
   return { ...rig, arms };
 }
 
+
+/** A tapered trunk: narrow at the hips, widest across the ribs. */
+export function torsoPath(rig: Rig): string {
+  const { n } = frame(rig.pelvis, rig.chest);
+  const profile: [number, number][] = [
+    [-0.1, 20],
+    [0.16, 23],
+    [0.5, 25],
+    [0.78, 27],
+    [1.04, 23],
+  ];
+  const left: Vec[] = [];
+  const right: Vec[] = [];
+  for (const [u, hw] of profile) {
+    const c = lerpV(rig.pelvis, rig.chest, u);
+    left.push({ x: c.x + n.x * hw, y: c.y + n.y * hw });
+    right.push({ x: c.x - n.x * hw, y: c.y - n.y * hw });
+  }
+  return closedPath([...left, ...right.reverse()]);
+}

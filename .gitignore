@@ -19,6 +19,9 @@ id_rsa*
 credentials.json
 service-account*.json
 
+# generated social assets — regenerate with `npm run social`
+public/social
+
 # hosting
 .vercel
 
